@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agency Management</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            width: 400px;
+            border-radius: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            background: green;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Agency List</h2>
+
+    <table id="agencyTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="card">
+        <h3>Create Agency</h3>
+
+        <input type="text" id="fullName" placeholder="Full Name">
+        <input type="text" id="fullNameTranslate" placeholder="Full Name Translate">
+
+        <select id="leader">
+            <option value="">-- Select Leader --</option>
+        </select>
+
+        <button onclick="submitAgency()">Submit</button>
+    </div>
+
+    <script>
+        const API = "http://localhost:8080/api/agencies";
+
+        async function loadAgencies() {
+            const res = await fetch(API);
+            const data = await res.json();
+
+            const tbody = document.querySelector("#agencyTable tbody");
+            const leaderSelect = document.getElementById("leader");
+
+            tbody.innerHTML = "";
+            leaderSelect.innerHTML = '<option value="">-- Select Leader --</option>';
+
+            data.content.forEach(a => {
+
+                // ✅ Table row
+                const row = `
+                    <tr>
+                        <td>${a.id}</td>
+                        <td>${a.fullName}</td>
+                        <td>${a.code}</td>
+                        <td>${a.phone}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+
+                // ✅ Dropdown option
+                const option = document.createElement("option");
+                option.value = a.id;
+                option.text = a.fullName + " (ID: " + a.id + ")";
+                option.setAttribute("data-code", a.code); // ✅ ADD THIS
+                leaderSelect.appendChild(option);
+            });
+        }
+
+        async function submitAgency() {
+
+            const fullName = document.getElementById("fullName").value;
+            const fullNameTranslate = document.getElementById("fullNameTranslate").value;
+            const leaderId = document.getElementById("leader").value;
+
+            let data = {
+                fullName: fullName,
+                fullNameTranslate: fullNameTranslate
+            };
+
+            if (leaderId) {
+                data.leader = {
+                    id: parseInt(leaderId)
+                };
+            }
+
+            const res = await fetch(API, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert("Created successfully!");
+                loadAgencies(); // 🔄 reload table
+            } else {
+                alert("Error!");
+            }
+        }
+
+        // load on start
+        loadAgencies();
+    </script>
+
+</body>
+
+</html>
