@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demo.demo.dto.AuthResponse;
 import com.demo.demo.dto.LoginRequest;
 import com.demo.demo.service.AuthService;
 
@@ -18,10 +19,15 @@ public class AuthController {
         this.authService = authService;
     }
 
+    // LOGIN
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request);
+    }
 
-        return authService.login(request.getUsername());
-
+    // REFRESH TOKEN
+    @PostMapping("/refresh")
+    public String refresh(@RequestBody String refreshToken) {
+        return authService.refreshToken(refreshToken);
     }
 }

@@ -28,10 +28,8 @@ public class RoleController {
 
     @GetMapping("/{roleId}/permissions")
     public Set<Permission> getRolePermissions(@PathVariable Long roleId) {
-
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
-
         return role.getPermissions();
     }
 
@@ -39,7 +37,6 @@ public class RoleController {
     public Role assignPermissions(
             @PathVariable Long roleId,
             @RequestBody AssignPermissionRequest request) {
-
         return roleService.assignPermissions(roleId, request.getPermissionIds());
     }
 }

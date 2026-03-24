@@ -23,21 +23,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // 🔥 IMPORTANT
                 .csrf(csrf -> csrf.disable())
-
                 .formLogin(form -> form.disable())
-
                 .authorizeHttpRequests(auth -> auth
-
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/roles/**").permitAll()
                         .requestMatchers("/api/permissions/**").permitAll()
                         .requestMatchers("/api/agencies/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/home").permitAll()
-
                         .anyRequest().authenticated());
-
         return http.build();
     }
 
